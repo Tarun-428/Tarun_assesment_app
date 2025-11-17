@@ -1,0 +1,71 @@
+{# admin_clients.html #}
+{% extends "base.html" %}
+{% block title %}Admin - Clients{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Clients</h2>
+    <a href="{{ url_for('admin_client_create_form') }}" class="btn btn-success">Add Client</a>
+  </div>
+
+  <table class="table table-striped admin-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Image</th>
+        <th>Name</th>
+        <th>Designation</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+  {% for client in clients %}
+    <tr>
+      <td>{{ loop.index }}</td>
+
+      <td class="text-center">
+        {% if client.image_url %}
+          {% set img = client.image_url %}
+          {% if img.startswith('http://') or img.startswith('https://') %}
+            {# Online image: use as-is #}
+            <img src="{{ img }}" class="admin-thumb-circle" alt="client image">
+          {% else %}
+            {# Local static image: ensure it starts with a single leading "/" #}
+            <img src="/{{ img.lstrip('/') }}" class="admin-thumb-circle" alt="client image">
+          {% endif %}
+        {% else %}
+          <span>No Image</span>
+        {% endif %}
+      </td>
+
+      <td>{{ client.name }}</td>
+
+      <td>{{ client.designation }}</td>
+
+      <td>
+        {{ client.description[:60] if client.description }}
+        {% if client.description and client.description|length > 60 %}...{% endif %}
+      </td>
+
+      <td>
+        <a href="{{ url_for('admin_client_edit_form', client_id=client.id) }}"
+           class="btn btn-edit btn-sm">Edit</a>
+
+        <form method="post"
+              action="{{ url_for('admin_client_delete', client_id=client.id) }}"
+              style="display:inline-block"
+              onsubmit="return confirm('Delete this client?');">
+          <button class="btn btn-delete btn-sm">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="6">No clients found.</td></tr>
+  {% endfor %}
+</tbody>
+
+  </table>
+</div>
+{% endblock %}

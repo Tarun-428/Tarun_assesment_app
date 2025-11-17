@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Admin - Project Form{% endblock %}
+{% block content %}
+<div class="container">
+  <h2 class="mb-3">
+    {% if project %}Edit Project{% else %}Create Project{% endif %}
+  </h2>
+
+  <form method="post">
+    <div class="mb-3">
+      <label class="form-label">Project Name</label>
+      <input type="text" name="name" class="form-control"
+             value="{{ project.name if project else '' }}" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea name="description" class="form-control" rows="4" required>{{
+        project.description if project else ''
+      }}</textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Image URL</label>
+      <input type="text" name="image_url" class="form-control"
+             value="{{ project.image_url if project else '' }}">
+    </div>
+    <button type="submit" class="btn btn-primary">
+      {% if project %}Update{% else %}Create{% endif %}
+    </button>
+    <a href="{{ url_for('admin_projects') }}" class="btn btn-secondary">Back</a>
+  </form>
+</div>
+{% endblock %}

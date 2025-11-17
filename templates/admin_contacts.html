@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Admin - Contacts{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Contact Submissions</h2>
+  </div>
+
+  <table class="table table-striped admin-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Full Name</th>
+        <th>Email</th>
+        <th>Mobile</th>
+        <th>City</th>
+        <th>Submitted At</th>
+      </tr>
+    </thead>
+
+    <tbody>
+    {% for c in contacts %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ c.full_name }}</td>
+        <td>{{ c.email }}</td>
+        <td>{{ c.mobile }}</td>
+        <td>{{ c.city }}</td>
+        <td>{{ c.created_at }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6" class="text-center">No contacts yet.</td></tr>
+    {% endfor %}
+    </tbody>
+
+  </table>
+</div>
+{% endblock %}
