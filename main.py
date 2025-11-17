@@ -5,17 +5,23 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 
-from database import engine, Base, get_db
+from database import engine, Base, get_db, test_connection, init_db
 from models import Project, Client, Contact, Subscriber
-
-# Create tables
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
 # Static & templates
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+
+# ---- Run when app starts (Render + local) ---- #
+@app.on_event("startup")
+def on_startup():
+    # Optional: test DB and create tables
+    if test_connection():
+        init_db()
+    
 
 
 # ---------------------- PUBLIC ROUTES (Landing) ---------------------- #
@@ -50,7 +56,6 @@ def submit_contact(
     city: str = Form(...),
     db: Session = Depends(get_db),
 ):
-    # Basic validation (server side)
     if not (full_name and email and mobile and city):
         url = app.url_path_for("landing") + "?error=Please+fill+all+fields"
         return RedirectResponse(url=url, status_code=status.HTTP_303_SEE_OTHER)
@@ -90,8 +95,6 @@ def subscribe(
 
 
 # ---------------------- ADMIN ROUTES ---------------------- #
-# NOTE: No authentication here for simplicity (assignment usually doesn’t require).
-# You can add auth with a simple login later if needed.
 
 @app.get("/admin")
 def admin_dashboard(request: Request, db: Session = Depends(get_db)):
